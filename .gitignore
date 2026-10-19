@@ -5,3 +5,8 @@
 /data/*.json
 # vendored upstream reference (tower-together sim source + 288MB of trace fixtures); see reference/README.md
 /reference/tower-together/
+# runtime
+/simtower.log
+/data/*.ui.json
+/simtower.exe
+/dist/

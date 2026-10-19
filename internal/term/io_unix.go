@@ -21,7 +21,7 @@ func enableKeepAlive(fd int) {
 	if err := unix.SetsockoptInt(fd, unix.SOL_SOCKET, unix.SO_KEEPALIVE, 1); err != nil {
 		return
 	}
-	unix.SetsockoptInt(fd, unix.IPPROTO_TCP, unix.TCP_KEEPIDLE, 60)
+	unix.SetsockoptInt(fd, unix.IPPROTO_TCP, tcpKeepIdleOpt, 60)
 	unix.SetsockoptInt(fd, unix.IPPROTO_TCP, unix.TCP_KEEPINTVL, 15)
 	unix.SetsockoptInt(fd, unix.IPPROTO_TCP, unix.TCP_KEEPCNT, 4)
 }

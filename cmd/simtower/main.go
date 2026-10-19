@@ -101,20 +101,11 @@ func main() {
 	}()
 
 	if !haveDrop {
-		// local tty: follow window resizes
-		winch := make(chan os.Signal, 1)
-		signal.Notify(winch, syscall.SIGWINCH)
-		go func() {
-			for range winch {
-				if c, r, ok := term.LocalSize(); ok {
-					events <- term.Event{Resize: true, Cols: c, Rows: r}
-				}
-			}
-		}()
+		watchResize(events) // local tty: follow window resizes (SIGWINCH on unix)
 	}
 	probe := 3 * time.Second
 	if *size != "" || !haveDrop {
-		probe = 0 // forced size, or a local tty (SIGWINCH covers it)
+		probe = 0 // forced size, or a local tty (watchResize covers it)
 	}
 	savePath := filepath.Join(*dataDir, saveName(name)+".json")
 	var model ui.Model
