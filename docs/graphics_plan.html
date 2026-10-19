@@ -1,0 +1,674 @@
+<title>SimTower BBS Door Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one column plan doc; each mock is a live-painted terminal at real cell proportions. */
+:root {
+  --bg: #f3f1ea; --fg: #1d1f24; --muted: #5d6068; --panel: #e6e2d6; --line: #c9c4b4;
+  --accent: #b8641b; --accent-ink: #ffffff; --term-frame: #2a2d33;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", "DejaVu Sans Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #16181c; --fg: #e8e6df; --muted: #9a9ea8; --panel: #22252b; --line: #363a42;
+  --accent: #e0893a; --accent-ink: #16181c; --term-frame: #0b0c0e; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #16181c; --fg: #e8e6df; --muted: #9a9ea8; --panel: #22252b; --line: #363a42;
+  --accent: #e0893a; --accent-ink: #16181c; --term-frame: #0b0c0e; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; }
+main { max-width: 1120px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.05; margin: 0; }
+h1 { font-size: 3rem; font-weight: 700; }
+h2 { font-size: 1.9rem; font-weight: 700; border-bottom: 2px solid var(--accent); padding-bottom: 4px; }
+h3 { font-size: 1.25rem; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+p { max-width: 70ch; margin: 0; }
+section { display: grid; gap: 16px; }
+header { padding-block: 40px 8px; display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 1.15rem; color: var(--muted); max-width: 70ch; }
+.term { background: var(--term-frame); border-radius: 6px; padding: 10px; overflow-x: auto; }
+.term canvas { display: block; }
+.termbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+.termbar button { font-family: var(--mono); font-size: .8rem; padding: 3px 10px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 4px; cursor: pointer; }
+.termbar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.termbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cap { font-size: .9rem; color: var(--muted); max-width: 90ch; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px 32px; }
+.cols > div { min-width: 0; }
+ul { margin: 0; padding-left: 1.2em; max-width: 70ch; }
+li { margin-bottom: 4px; }
+kbd { font-family: var(--mono); font-size: .8rem; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0 5px; }
+.sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.tile { background: var(--panel); border-radius: 6px; padding: 10px; display: grid; gap: 6px; min-width: 0; }
+.tile h4 { margin: 0; font-family: var(--display); font-size: 1.1rem; font-weight: 500; }
+.tile .term { padding: 6px; }
+.tile .st { font-size: .85rem; color: var(--muted); }
+.qbox { background: var(--panel); border-left: 4px solid var(--accent); padding: 12px 16px; display: grid; gap: 8px; }
+.qbox p { max-width: 90ch; }
+@media (prefers-reduced-motion: reduce) { .term canvas { animation: none; } }
+</style>
+
+<main>
+<header>
+  <div class="eyebrow">xtrn/sim_tower · Go door · revised plan</div>
+  <h1>SimTower on a terminal, three rows per floor</h1>
+  <p class="lede">Every floor is three text rows tall so rooms carry real art and the tower moves: workers at desks, guests asleep under rising z's, elevator cars with doors that open, two-cell people walking the lobby. The mocks below are painted live by the same tile rules the door will use.</p>
+</header>
+
+<section>
+  <h2>What changed from the first draft</h2>
+  <ul>
+    <li><strong>Three rows per floor, one column per unit.</strong> A 9-unit office is a 9x3 scene. The original floor is 4.5 units tall at 8 px per unit; three 8x16 cells give 6 units, close enough that the tower keeps its proportions.</li>
+    <li><strong>Responsive.</strong> 80x24 is the minimum: 7 floors by 76 units. The door probes the terminal and uses all of it. 132x50 shows 15 floors by 128 units, and SyncTERM at 80x60 shows 19 floors. Nothing is scaled, only the viewport.</li>
+    <li><strong>Art per room, not patterns.</strong> Each item has a drawn tile with states (vacant, occupied, closed, lit, dirty, asleep, infested, burning). Signs carry the room's real name from the original list.</li>
+    <li><strong>Animation.</strong> People walk (2 frames), elevator cars move in thirds of a floor and open their doors, escalators run, cinema screens flicker during shows, clouds drift, rain falls, fire flickers and spreads.</li>
+    <li><strong>Zoom out.</strong> <kbd>Z</kbd> switches to a one-row-per-floor overview for navigating a 100-floor tower; it is a map, not the game view.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Main view at 80x24 (minimum)</h2>
+  <div class="termbar"><span>Time of day:</span>
+    <button data-tod="day" aria-pressed="true">Day</button><button data-tod="dusk">Dusk</button><button data-tod="night">Night</button><button data-tod="rain">Rain</button>
+    <span>·</span><button id="playpause" aria-pressed="true">Animating</button></div>
+  <div class="term"><canvas id="main"></canvas></div>
+  <p class="cap">Seven floors, B1 to 6F, units 0 to 75. The ground lobby is the amber hall with lamps, pillars, a reception desk and people walking. Offices show workers at monitors, the vacant one is dark. The standard shaft at units 24 to 27 has a car moving between floors with its doors closed, and people queue on the left of the shaft to go up and on the right to go down, exactly as the original draws it. 2F has a fast food counter and a book store; 3F a sold condo, hotel rooms with a guest asleep and one dirty room, housekeeping and security; 4F a restaurant that opens at 5 PM; 5F and 6F the cinema with the screen lit during a show. B1 has a parking ramp and spaces. The gutter on the left names each floor. Status row on top, message line and hotkeys at the bottom.</p>
+</section>
+
+<section>
+  <h2>Same tower at 132x50</h2>
+  <div class="term"><canvas id="wide"></canvas></div>
+  <p class="cap">A wider terminal simply shows more: 15 floors from B3 to 12F and 128 units, with the express shaft (6 wide, stops only at lobbies and basements) and the metro station on B1 to B3 in view. Floor count and width follow the probe, down to 80x24.</p>
+</section>
+
+<section>
+  <h2>Tile sheet</h2>
+  <p>Every item as drawn, with its states. Wall on the right edge of each room; colors from the 16-color PC palette so this works on SyncTERM, NetRunner, fTelnet and the Linux console. The tiles are data (rows of characters plus a paint map), so they live in a text asset the Go renderer loads and they can be edited without touching code.</p>
+  <div class="sheet" id="sheet"></div>
+</section>
+
+<section>
+  <h2>Building, inspecting, elevators</h2>
+  <div class="term"><canvas id="build"></canvas></div>
+  <p class="cap">The build palette (<kbd>B</kbd> or click BUILD) lists every item with a live preview of its tile, cost and star requirement; locked rows are grey. With a tool selected, moving the mouse over the tower shows the item's outline as a ghost (white) that turns red where placement is illegal with the reason on the message line. Left click places, the tool stays armed like the original; right click or <kbd>Esc</kbd> drops it. Elevator shafts drag vertically; lobby and floor drag horizontally; bulldoze drags across a run. Keyboard fallback: a cursor cell, arrows move, <kbd>Enter</kbd> places, <kbd>Shift</kbd>+arrows drag.</p>
+  <div class="term"><canvas id="elev"></canvas></div>
+  <p class="cap">Inspecting a shaft opens the elevator panel: the shaft with its cars, served floors, and the original's per-period schedule (WD/WE, 7 periods) with Local / Express Up / Express Down per period, Waiting Car Response and Standard Floor Departure dials, and ADD CAR. Inspecting a room shows its facility window: name and floor, leasing state, evaluation bar, occupants, length of stay, rent or price dial, and the message line the original shows ("Office neighbor is too noisy").</p>
+</section>
+
+<section>
+  <h2>Open choices</h2>
+  <div class="qbox">
+    <p><strong>Floor height.</strong> Three rows is the default here. Two rows per floor is closer to the original's proportions (4 units tall vs 4.5) and shows 10 floors at 80x24, but people become one cell and beds and desks lose a row. Four rows gives richer art and 5 floors at 80x24. The tiles are data, so the renderer can carry more than one height if you want to compare in the terminal.</p>
+    <p><strong>Truecolor.</strong> Spekder probes the terminal and uses 24-bit color where available. The tiles here are 16-color; a truecolor pass could soften walls, carpet and sky without changing the art. Deferred unless you want it in the first build.</p>
+    <p><strong>Sprite people in the lobby.</strong> Two-cell people (head + body) with a two-frame walk. One-cell faces are kept for elevator cars and queues where space is tight.</p>
+  </div>
+</section>
+</main>
+
+<script>
+// ───────────────────────── terminal painter ─────────────────────────
+const PAL = ['#000000','#0000aa','#00aa00','#00aaaa','#aa0000','#aa00aa','#aa5500','#aaaaaa',
+             '#555555','#5555ff','#55ff55','#55ffff','#ff5555','#ff55ff','#ffff55','#ffffff'];
+function paintTerm(canvas, cells, cols, rows, cw, chh) {
+  const dpr = window.devicePixelRatio || 1;
+  if (canvas.width !== cols*cw*dpr || canvas.height !== rows*chh*dpr) {
+    canvas.width = cols*cw*dpr; canvas.height = rows*chh*dpr;
+    canvas.style.width = (cols*cw)+'px'; canvas.style.height = (rows*chh)+'px';
+  }
+  const g = canvas.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
+  g.font = '600 '+(chh*0.80)+'px "IBM Plex Mono", "DejaVu Sans Mono", monospace';
+  g.textBaseline = 'middle'; g.textAlign = 'center';
+  for (let y=0;y<rows;y++) for (let x=0;x<cols;x++) {
+    const c = cells[y*cols+x] || {ch:' ',fg:7,bg:0};
+    const px=x*cw, py=y*chh;
+    g.fillStyle = PAL[c.bg&7]; g.fillRect(px,py,cw,chh);
+    if (c.ch===' ') continue;
+    g.fillStyle = PAL[c.fg&15];
+    drawGlyph(g, c.ch, px, py, cw, chh);
+  }
+}
+function drawGlyph(g, ch, px, py, cw, chh) {
+  const hw=cw/2, hh=chh/2;
+  switch (ch) {
+    case '█': g.fillRect(px,py,cw,chh); return;
+    case '▀': g.fillRect(px,py,cw,hh); return;
+    case '▄': g.fillRect(px,py+hh,cw,hh); return;
+    case '▌': g.fillRect(px,py,hw,chh); return;
+    case '▐': g.fillRect(px+hw,py,hw,chh); return;
+    case '░': shade(g,px,py,cw,chh,1); return;
+    case '▒': shade(g,px,py,cw,chh,2); return;
+    case '▓': shade(g,px,py,cw,chh,3); return;
+    case '─': g.fillRect(px,py+hh-1,cw,2); return;
+    case '│': g.fillRect(px+hw-1,py,2,chh); return;
+    case '═': g.fillRect(px,py+hh-3,cw,2); g.fillRect(px,py+hh+1,cw,2); return;
+    case '║': g.fillRect(px+hw-3,py,2,chh); g.fillRect(px+hw+1,py,2,chh); return;
+    case '╔': g.fillRect(px+hw-3,py+hh-3,cw-hw+3,2); g.fillRect(px+hw-3,py+hh-3,2,chh-hh+3); g.fillRect(px+hw+1,py+hh+1,cw-hw-1,2); g.fillRect(px+hw+1,py+hh+1,2,chh-hh-1); return;
+    case '╗': g.fillRect(px,py+hh-3,hw+3,2); g.fillRect(px+hw+1,py+hh-3,2,chh-hh+3); g.fillRect(px,py+hh+1,hw-1,2); g.fillRect(px+hw-3,py+hh+1,2,chh-hh-1); return;
+    case '╚': g.fillRect(px+hw-3,py,2,hh+3); g.fillRect(px+hw-3,py+hh+1,cw-hw+3,2); g.fillRect(px+hw+1,py,2,hh-1); g.fillRect(px+hw+1,py+hh-3,cw-hw-1,2); return;
+    case '╝': g.fillRect(px+hw+1,py,2,hh+3); g.fillRect(px,py+hh+1,hw+3,2); g.fillRect(px+hw-3,py,2,hh-1); g.fillRect(px,py+hh-3,hw-1,2); return;
+    case '╥': g.fillRect(px,py+hh-1,cw,2); g.fillRect(px+hw-3,py+hh,2,chh-hh); g.fillRect(px+hw+1,py+hh,2,chh-hh); return; // ╥
+    case '╨': g.fillRect(px,py+hh-1,cw,2); g.fillRect(px+hw-3,py,2,hh); g.fillRect(px+hw+1,py,2,hh); return; // ╨
+    case '╫': g.fillRect(px,py+hh-1,cw,2); g.fillRect(px+hw-3,py,2,chh); g.fillRect(px+hw+1,py,2,chh); return; // ╫
+    case '╬': g.fillRect(px,py+hh-3,cw,2); g.fillRect(px,py+hh+1,cw,2); g.fillRect(px+hw-3,py,2,chh); g.fillRect(px+hw+1,py,2,chh); return; // ╬
+    case '■': g.fillRect(px+cw*0.15,py+chh*0.25,cw*0.7,chh*0.5); return;
+    case '▪': g.fillRect(px+cw*0.3,py+chh*0.35,cw*0.4,chh*0.3); return;
+    case '▬': g.fillRect(px,py+chh*0.35,cw,chh*0.3); return; // ▬
+    case '☺': face(g,px,py,cw,chh,false); return;
+    case '☻': face(g,px,py,cw,chh,true); return;
+    case '▲': tri(g,px,py,cw,chh,true); return;
+    case '▼': tri(g,px,py,cw,chh,false); return;
+    case '∙': g.beginPath(); g.arc(px+hw,py+hh,1.6,0,7); g.fill(); return; // ∙
+    case '·': g.beginPath(); g.arc(px+hw,py+hh,1.3,0,7); g.fill(); return;
+    case '○': g.beginPath(); g.arc(px+hw,py+hh,cw*0.32,0,7); g.lineWidth=1.5; g.strokeStyle=g.fillStyle; g.stroke(); return; // ○
+    case '◙': g.beginPath(); g.arc(px+hw,py+hh,cw*0.38,0,7); g.fill(); return; // ◙ wheel
+    case '≡': g.fillRect(px,py+chh*0.3,cw,2); g.fillRect(px,py+hh-1,cw,2); g.fillRect(px,py+chh*0.7,cw,2); return; // ≡
+    case '∩': g.beginPath(); g.moveTo(px+2,py+chh-2); g.lineTo(px+2,py+hh); g.arc(px+hw,py+hh,hw-2,Math.PI,0); g.lineTo(px+cw-2,py+chh-2); g.lineWidth=2; g.strokeStyle=g.fillStyle; g.stroke(); return; // ∩
+    default: g.fillText(ch, px+hw, py+hh+1);
+  }
+}
+function shade(g,px,py,cw,chh,level) {
+  const s=2;
+  for (let yy=0; yy<chh; yy+=s) for (let xx=0; xx<cw; xx+=s) {
+    const i=(xx/s)|0, j=(yy/s)|0; let on;
+    if (level===1) on = (i%2===0 && j%2===0) || (i%2===1 && j%2===1 && (i+j)%4===2);
+    else if (level===2) on = (i+j)%2===0;
+    else on = !((i%2===0 && j%2===0) || (i%2===1 && j%2===1 && (i+j)%4===2));
+    if (on) g.fillRect(px+xx,py+yy,s,s);
+  }
+}
+function face(g,px,py,cw,chh,inv) {
+  const cx=px+cw/2, cy=py+chh/2, r=cw*0.42;
+  g.beginPath(); g.arc(cx,cy,r,0,7); if (inv) { g.fill(); return; }
+  g.lineWidth=1.6; g.strokeStyle=g.fillStyle; g.stroke();
+  g.beginPath(); g.arc(cx-r*0.35,cy-r*0.25,1.2,0,7); g.arc(cx+r*0.35,cy-r*0.25,1.2,0,7); g.fill();
+  g.beginPath(); g.arc(cx,cy+r*0.1,r*0.55,0.2,Math.PI-0.2); g.stroke();
+}
+function tri(g,px,py,cw,chh,up) {
+  g.beginPath();
+  if (up) { g.moveTo(px+cw/2,py+2); g.lineTo(px+cw-1,py+chh-3); g.lineTo(px+1,py+chh-3); }
+  else { g.moveTo(px+1,py+3); g.lineTo(px+cw-1,py+3); g.lineTo(px+cw/2,py+chh-2); }
+  g.closePath(); g.fill();
+}
+
+// ───────────────────────── cell grid ─────────────────────────
+function grid(cols, rows) {
+  const cells = new Array(cols*rows);
+  for (let i=0;i<cells.length;i++) cells[i] = {ch:' ', fg:7, bg:0};
+  cells.cols=cols; cells.rows=rows;
+  cells.set = (x,y,ch,fg,bg) => { if (x<0||y<0||x>=cols||y>=rows) return; const c=cells[y*cols+x]; c.ch=ch; c.fg=fg; if (bg!==undefined) c.bg=bg; };
+  cells.put = (x,y,str,fg,bg) => { for (let i=0;i<str.length;i++) cells.set(x+i,y,str[i],fg,bg); };
+  cells.fill = (x,y,w,h,ch,fg,bg) => { for (let yy=y;yy<y+h;yy++) for (let xx=x;xx<x+w;xx++) cells.set(xx,yy,ch,fg,bg); };
+  cells.get = (x,y) => (x<0||y<0||x>=cols||y>=rows) ? null : cells[y*cols+x];
+  return cells;
+}
+
+// ───────────────────────── tiles ─────────────────────────
+// A tile = rows of glyphs + paint rows; each paint char maps through `key` to [fg,bg].
+// '.' in paint = transparent (keep the background cell). Rows are art width (w-1); the
+// wall column is added by the renderer. Height = 3 rows per floor.
+const WALL = ['║', 8];
+const ROOF = '▀';
+const C = { // shared paint keys
+  '.': null,
+  'w': [11,1],   // window, day
+  'W': [14,0],   // window lit, night
+  'x': [8,0],    // window dark/unlit
+  'p': [15,0],   // person in room
+  'P': [0,6],    // person on lobby floor
+  'm': [7,0],    // monitor / fixture
+  'd': [6,0],    // desk / wood
+  'k': [8,0],    // dim fixture
+  'b': [9,0],    // bed
+  'B': [1,0],    // bed base
+  'c': [15,0],   // pillow
+  's': [13,0],   // sofa
+  'l': [10,0],   // plant
+  'y': [14,0],   // lamp / gold
+  'r': [12,0],   // red
+  'g': [10,0],   // green
+  'G': [2,0],
+  'z': [11,0],   // zzz
+  't': [6,0],    // dirt / brown
+  'T': [14,6],   // text on brown sign
+  'n': [15,5],   // text on magenta sign
+  'N': [5,0],    // magenta fixture
+  'R': [15,4],   // text on red sign
+  'o': [0,6],    // black on amber
+  'S': [0,7],    // black on light grey sign
+  'h': [7,0],    // light grey
+  'H': [15,0],   // bright white
+  'e': [12,0],   // flame red
+  'E': [14,0],   // flame yellow
+  'a': [3,0],    // dark cyan
+  'A': [11,0],   // bright cyan
+  'u': [4,0],    // dark red
+  'v': [13,0],   // bright magenta
+  'q': [1,0],    // dark blue
+  'Q': [9,0],    // bright blue
+};
+function rows3(a,b,c){ return [a,b,c]; }
+
+const TILES = {
+  office: { w:9, name:'Office', states:['occupied','vacant','night'],
+    draw(st, t) {
+      const win = st==='night' ? 'W' : (st==='vacant' ? 'x' : 'w');
+      const work = st==='occupied' || st==='night';
+      return { rows: rows3('▄▄ ▄▄ ▄▄', work ? '☺■ ☺■ ☺■' : '  ·  ·  ', '▀▀ ▀▀ ▀▀'),
+               paint: rows3(win+win+' '+win+win+' '+win+win, work ? 'pm pm pm' : '  k  k  ', st==='vacant' ? 'kk kk kk' : 'dd dd dd') };
+    } },
+  condo: { w:16, name:'Condo', states:['sold','forsale','night'],
+    draw(st, t) {
+      const win = st==='night' ? 'W' : (st==='forsale' ? 'x' : 'w');
+      if (st==='forsale') return { rows: rows3('▄▄▄ ▄▄▄   ▄▄▄ ', ' FOR SALE $150K', '               '),
+                                   paint: rows3('xxx xxx   xxx ', ' yyyyyyyyyyyyyy', '               ') };
+      const home = (t>>2)%2===0;
+      return { rows: rows3('▄▄▄ ▄▄▄   ▄▄▄ ', (home?'☺':' ')+' ▬▬▬ ■  ♣   ☺ ', '  ▀▀▀ ▀   ▀   ▀ '),
+               paint: rows3(win.repeat(3)+' '+win.repeat(3)+'   '+win.repeat(3)+' ', 'p sss m  l   p ', '  ddd d   d   d ') };
+    } },
+  hotelSingle: { w:4, name:'Hotel single', states:['vacant','occupied','asleep','dirty','infested'],
+    draw(st, t) {
+      let a=' ▪ ', pa=' d ';
+      if (st==='occupied') { a='☺▪ '; pa='pd '; }
+      if (st==='asleep') { a = (t%4<2) ? ' z ' : 'z  '; pa=' z '.replace(' z ','zz '); }
+      if (st==='dirty') { a=' ~ '; pa=' t '; }
+      if (st==='infested') { a = (t%2) ? '∙ ∙' : ' ∙ '; pa='ttt'; }
+      const bed = st==='dirty' ? '▒▒▒' : (st==='infested' ? '░░░' : '▀▄▄');
+      const pb = (st==='dirty'||st==='infested') ? 'ttt' : (st==='vacant' ? 'cbb' : 'cbb');
+      return { rows: rows3(a, bed, '▀▀▀'), paint: rows3(pa, pb, st==='vacant' ? 'BBB' : 'BBB') };
+    } },
+  hotelTwin: { w:6, name:'Hotel twin', states:['vacant','asleep','dirty'],
+    draw(st,t) {
+      const a = st==='asleep' ? ((t%4<2)?' z  z':'z  z ') : (st==='dirty' ? ' ~  ~' : ' ▪  ▪');
+      const pa = st==='asleep' ? 'zzzzz' : (st==='dirty' ? 'ttttt' : ' d  d');
+      const b = st==='dirty' ? '▒▒ ▒▒' : '▀▄ ▀▄';
+      return { rows: rows3(a, b, '▀▀ ▀▀'), paint: rows3(pa, st==='dirty' ? 'ttttt' : 'cb cb', 'BB BB') };
+    } },
+  hotelSuite: { w:10, name:'Hotel suite', states:['vacant','occupied','vip'],
+    draw(st,t) {
+      const guest = st!=='vacant';
+      const col = st==='vip' ? 'y' : 'p';
+      return { rows: rows3(' ▪ ☼   ▪ ', '▀▄▄ ▬▬ '+(guest?'☺':' ')+'♣', '▀▀▀ ▀▀  ▀'),
+               paint: rows3(' d y   d ', 'cbb ss '+col+'l', 'BBB dd  d') };
+    } },
+  fastFood: { w:16, name:'Fast food', states:['open','closed','rush'],
+    draw(st,t) {
+      const sign = centerText('HAMBURGER', 15);
+      const n = st==='rush' ? 6 : (st==='open' ? 3 : 0);
+      const slots = [0,2,11,13,10,1];
+      let b = ' '.repeat(15).split(''), pb = ' '.repeat(15).split('');
+      b[5]='║'; b[6]='▓'; b[7]='▓'; b[8]='▓'; b[9]='║'; pb[5]='h'; pb[6]='N'; pb[7]='N'; pb[8]='N'; pb[9]='h';
+      if (st!=='closed') { b[7]='☺'; pb[7]='p'; }
+      for (let i=0;i<n;i++) { b[slots[i]]='☺'; pb[slots[i]]='p'; }
+      const c = ' ╨ ╨ ▀▀▀▀▀ ╨ ╨ ';
+      return { rows: rows3(sign, b.join(''), c), paint: rows3(st==='closed' ? 'k'.repeat(15) : 'n'.repeat(15), pb.join(''), ' h h NNNNN h h ') };
+    } },
+  restaurant: { w:24, name:'Restaurant', states:['open','closed'],
+    draw(st,t) {
+      const sign = '☼ '+centerText('STEAK HOUSE', 19)+' ☼';
+      const open = st==='open';
+      const b = open ? '☺╥☺  ☺╥☺  ☺╥☺  ☺╥☺  ☺╥☺' : ' ╥    ╥    ╥    ╥    ╥ ';
+      const pb = open ? 'phpphpphpphpphpphpphpphp'.slice(0,23).replace(/p(?=h)/g,'p') : 'khkkkhkkkkhkkkkhkkkkhkk';
+      return { rows: rows3(sign, b, ' ╨    ╨    ╨    ╨    ╨ '), paint: rows3(open ? 'y'+'R'.repeat(21)+'y' : 'k'+'u'.repeat(21)+'k', open ? 'php  php  php  php  php' : pb, open ? ' h    h    h    h    h ' : ' k    k    k    k    k ') };
+    } },
+  retail: { w:12, name:'Retail shop', states:['open','closed'],
+    draw(st,t) {
+      const open = st==='open';
+      return { rows: rows3(centerText('BOOK STORE', 11), open ? '▓▓ ☺ ▓▓ ☺ ▓' : '▓▓   ▓▓   ▓', '▀▀   ▀▀   ▀'),
+               paint: rows3(open ? 'T'.repeat(11) : 'k'.repeat(11), open ? 'dd p dd p d' : 'kk   kk   k', open ? 'dd   dd   d' : 'kk   kk   k') };
+    } },
+  cinema: { w:31, h:6, name:'Cinema', states:['showing','idle'],
+    draw(st,t) {
+      const show = st==='showing';
+      const scr = show ? ((t%3===0)?'▓':'█') : '░';
+      const sc = show ? 'H' : 'k';
+      const seats = (hs) => hs ? '▄☺▄☺▄☺▄☺▄☺▄☺▄☺▄☺▄☺▄☺▄☺▄☺' : '▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ';
+      const sp = (hs) => (hs ? 'uhuhuhuhuhuhuhuhuhuhuhuh' : 'u u u u u u u u u u u u ');
+      const stairs = ['▄█▀   ', '  ▄█▀ ', '    ▄█'];
+      const ent = ['CINEMA','☺  ☺  ',' ☺    '];
+      const rows = [
+        '╔'+'═'.repeat(22)+'╗'+ent[0],
+        '║'+scr.repeat(22)+'║'+(show?ent[1]:'      '),
+        '╚'+'═'.repeat(22)+'╝'+(show?ent[2]:'      '),
+        seats(show)+stairs[2],
+        seats(show)+stairs[1],
+        seats(show)+stairs[0],
+      ];
+      const paint = [
+        'h'.repeat(24)+'R'.repeat(6),
+        'h'+sc.repeat(22)+'h'+'pppppp',
+        'h'.repeat(24)+'pppppp',
+        sp(show)+'hhhhhh', sp(show)+'hhhhhh', sp(show)+'hhhhhh',
+      ];
+      return { rows, paint };
+    } },
+  partyHall: { w:24, h:6, name:'Party hall', states:['party','idle'],
+    draw(st,t) {
+      const on = st==='party';
+      const d1 = (t%2) ? '☺☺ ♪  ☺ ☺  ♫ ☺☺  ♪ ☺ ' : ' ☺☺ ♪ ☺ ☺ ♫  ☺☺ ♪  ☺';
+      return { rows: [ '  ☼     ☼     ☼     ☼  ', centerText('═ PARTY HALL ═', 23), on ? d1 : ' '.repeat(23), '  ╥    ╥    ╥    ╥    ', on ? ' ☺╥☺  ☺╥☺  ☺╥☺  ☺╥☺  ' : '  ╨    ╨    ╨    ╨    ', '▀'.repeat(23) ],
+               paint: [ (on?'y':'k').repeat(23), (on?'v':'k').repeat(23), 'pyypppyyppppypp'.padEnd(23,'p'), 'hhhhhhhhhhhhhhhhhhhhhhh', 'phpphpphpphpphpphpphpph', (on?'d':'k').repeat(23) ] };
+    } },
+  housekeeping: { w:15, name:'Housekeeping', states:['day'],
+    draw(st,t) { return { rows: rows3(centerText('HOUSEKEEPING',14), '☺▬ ☺▬ ☺▬ ☺▬  ', ' ◙  ◙  ◙  ◙   '), paint: rows3('S'.repeat(14), 'ph ph ph ph   ', ' h  h  h  h    ') }; } },
+  security: { w:16, name:'Security office', states:['day'],
+    draw(st,t) { return { rows: rows3('■ ■ ■ SECURITY ', '☺ ☺ ☺ ☺ ☺ ☺  ▬▬', '▀'.repeat(15)), paint: rows3('A A A QQQQQQQQ ', 'p p p p p p  hh', 'k'.repeat(15)) }; } },
+  medical: { w:26, name:'Medical center', states:['day'],
+    draw(st,t) { return { rows: rows3(centerText('+ MEDICAL CENTER +',25), '▀▄▄ ☺  ▀▄▄ ☺  ▀▄▄ ☺  ▀▄▄ ', '▀▀▀    ▀▀▀    ▀▀▀    ▀▀▀ '), paint: rows3('S'.repeat(25), 'cbb p  cbb p  cbb p  cbb ', 'BBB    BBB    BBB    BBB ') }; } },
+  parkingRamp: { w:15, name:'Parking ramp', states:['day'],
+    draw(st,t) { return { rows: rows3('P         ▄▄▀▀', '     ▄▄▀▀     ', '▄▄▀▀          '), paint: rows3('Q         hhhh', '     hhhh     ', 'hhhh          ') }; } },
+  parking: { w:4, name:'Parking space', states:['car','empty'],
+    draw(st,t) { const col = ['r','Q','y','g'][t%4]; return st==='car' ? { rows: rows3('   ', '▄█▄', '◙ ◙'), paint: rows3('   ', col+col+col, 'h h') } : { rows: rows3('   ','   ','┴ ┴'), paint: rows3('   ','   ','k k') }; } },
+  metro: { w:30, h:9, name:'Metro station', states:['train','empty'],
+    draw(st,t) {
+      const train = st==='train';
+      const tr = '▐'+'█'.repeat(10)+'▌';
+      const pos = 8 + ((t*2)%6);
+      let tunnel = ' '.repeat(29).split(''), tp = ' '.repeat(29).split('');
+      if (train) for (let i=0;i<tr.length;i++) { if (pos+i<29) { tunnel[pos+i]=tr[i]; tp[pos+i]='h'; } }
+      return { rows: [
+        centerText('══ METRO ══', 29),
+        '  ☺   ╫ ╫ ╫   ☺   ☺      ',
+        '      ╨ ╨ ╨                ',
+        '  ☺  ☺    ☺   ☺    ☺  ☺    ',
+        '▀'.repeat(29),
+        ' '.repeat(29),
+        tunnel.join(''), '═'.repeat(29), ' '.repeat(29) ],
+        paint: [ 'S'.repeat(29), '  p   hhhhh   p   p      ', '      hhhhh                ', '  p  p    p   p    p  p    ', 'h'.repeat(29), ' '.repeat(29), tp.join(''), 'k'.repeat(29), ' '.repeat(29) ] };
+    } },
+  cathedral: { w:28, h:12, name:'Cathedral', states:['wedding','idle'],
+    draw(st,t) {
+      const on = st==='wedding';
+      const r = [];
+      r.push('             ╬            ');
+      r.push('            ▄█▄           ');
+      r.push('           ▄███▄          ');
+      r.push('          ███████          ');
+      r.push('   ∩  ∩   █ ▓ █   ∩  ∩   ');
+      r.push('   ▓  ▓   █ ▓ █   ▓  ▓   ');
+      r.push('   ▓  ▓   █████   ▓  ▓   ');
+      r.push(' ∩∩∩∩∩∩∩∩∩ ∩ ∩∩∩∩∩∩∩∩∩ ');
+      r.push(on ? ' ☺ ☺ ☺ ☺  ♪ ☺☺ ♪  ☺ ☺ ☺ ☺ ' : ' '.repeat(27));
+      r.push(on ? ' ☺ ☺ ☺ ☺   ☺  ☺   ☺ ☺ ☺ ☺ ' : ' '.repeat(27));
+      r.push(on ? ' ☺ ☺ ☺ ☺    ▄▄    ☺ ☺ ☺ ☺ ' : '             ▄▄            ');
+      r.push('▀'.repeat(27));
+      const p = r.map((row,i) => row.split('').map(ch => ch==='▓' ? ['Q','r','y','g'][(i*3)%4] : (ch==='☺' ? 'p' : (ch==='♪' ? 'y' : (ch==='╬' ? 'y' : 'H')))).join(''));
+      return { rows: r, paint: p };
+    } },
+  recycling: { w:25, h:6, name:'Recycling center', states:['day'],
+    draw(st,t) { return { rows: [ centerText('RECYCLING', 24), ' ▓▓  ▓▓  ▓▓  ▓▓  ▓▓   ', ' ▀▀  ▀▀  ▀▀  ▀▀  ▀▀   ', '           ═════════════', '  ▄████▄    ▓ ▓ ▓        ', '  ◙    ◙    ▀ ▀ ▀        ' ],
+      paint: [ 'S'.repeat(24), ' gg  gg  gg  gg  gg   ', ' GG  GG  GG  GG  GG   ', '           kkkkkkkkkkkkk', '  hhhhhh    g g g        ', '  h    h    G G G        ' ] }; } },
+  stairs: { w:8, h:6, name:'Stairs', states:['idle','used'], nowall:true,
+    draw(st,t) {
+      const r = ['      ▄█','     ▄█▀','    ▄█▀ ','   ▄█▀  ','  ▄█▀   ','▄█▀     '];
+      const p = r.map(x => x.replace(/[^ ]/g,'h'));
+      if (st==='used') { const i = 5-(t%6); const rr=r[i].split(''); const pp=p[i].split(''); const pos = 6-i; rr[pos-1>=0?pos-1:0] = '☺'; pp[pos-1>=0?pos-1:0]='p'; r[i]=rr.join(''); p[i]=pp.join(''); }
+      return { rows: r, paint: p };
+    } },
+  escalator: { w:8, h:6, name:'Escalator', states:['run'], nowall:true,
+    draw(st,t) {
+      const r = ['      ▄≡','     ▄≡▀','    ▄≡▀ ','   ▄≡▀  ','  ▄≡▀   ','▄≡▀     '];
+      const p = r.map(x => x.replace(/≡/g,'A').replace(/[▄▀]/g,'h'));
+      const i = 5-(t%6); const rr=r[i].split(''); const pp=p[i].split(''); const pos=6-i; rr[pos]='☻'; pp[pos]='y'; r[i]=rr.join(''); p[i]=pp.join('');
+      return { rows: r, paint: p };
+    } },
+  elevator: { w:4, name:'Standard elevator', states:['open','moving','empty'], shaft:true,
+    draw(st,t) {
+      if (st==='empty') return { rows: rows3('··','··','··'), paint: rows3('kk','kk','kk') };
+      if (st==='moving') return { rows: rows3('▄▄','▐▌','▀▀'), paint: rows3('hh','HH','hh') };
+      return { rows: rows3('▄▄','☺☺','▀▀'), paint: rows3('hh','pp','hh') };
+    } },
+  elevatorExpress: { w:6, name:'Express elevator', states:['open','moving'], shaft:true,
+    draw(st,t) {
+      if (st==='moving') return { rows: rows3('▄▄▄▄','▐██▌','▀▀▀▀'), paint: rows3('hhhh','HHHH','hhhh') };
+      return { rows: rows3('▄▄▄▄','☺☺☺☺','▀▀▀▀'), paint: rows3('hhhh','pppp','hhhh') };
+    } },
+  lobby: { w:16, name:'Lobby (per 16 units)', states:['day','night'], nowall:true,
+    draw(st,t) {
+      const night = st==='night';
+      return { rows: rows3('║   ☼       ☼   ', '║  ☺   ▬▬▬   ☺ ', '║  ╨   ▀▀▀   ∩ '), paint: rows3('H   '+(night?'y':'o')+'       '+(night?'y':'o')+'   ', 'H  o   ooo   o ', 'H  o   ooo   o ') };
+    } },
+};
+function centerText(s, w) { const pad = w - s.length; const l = Math.floor(pad/2); return ' '.repeat(Math.max(0,l)) + s + ' '.repeat(Math.max(0, pad-l)); }
+
+// Blit a tile at x (unit), y (top row) into cells; applies paint via key C.
+function blit(cells, x, y, kind, st, t, opts) {
+  const T = TILES[kind]; const d = T.draw(st, t); const w = T.w; const h = T.h || 3;
+  for (let r=0;r<h;r++) {
+    const row = (d.rows[r]||'').padEnd(w-1,' ').slice(0,w-1), pr = (d.paint[r]||'').padEnd(w-1,' ').slice(0,w-1);
+    for (let i=0;i<w-1;i++) {
+      const ch = row[i], pk = pr[i];
+      if (pk==='.' || (ch===' ' && pk===' ')) continue;
+      const col = C[pk] || [7,0];
+      cells.set(x+i, y+r, ch, col[0], col[1]);
+    }
+    if (!T.nowall && !T.shaft) cells.set(x+w-1, y+r, WALL[0], WALL[1], 0);
+  }
+}
+
+// ───────────────────────── scene ─────────────────────────
+// floors: index 0 = 1F; negative = basements. Viewport maps floor -> top row.
+function scene(cols, rows, t, tod, opts) {
+  opts = opts || {};
+  const c = grid(cols, rows);
+  const gutter = 4, y0 = 1, vrows = rows - 3;
+  const nfloors = Math.floor(vrows / 3);
+  const topFloor = opts.topFloor ?? (nfloors - 2); // floors topFloor..topFloor-nfloors+1
+  const fy = f => y0 + (topFloor - f) * 3;      // top row of floor f
+  const X = u => gutter + u;
+  const units = cols - gutter;
+  const night = tod==='night', dusk = tod==='dusk', rain = tod==='rain';
+  // sky
+  const skyBg = night ? 0 : (dusk ? 5 : (rain ? 8 : 1));
+  for (let y=y0; y<y0+vrows; y++) for (let x=gutter; x<cols; x++) c.set(x,y,' ',7,skyBg);
+  if (night) { for (let i=0;i<40;i++) { const sx = gutter + (i*37)%units, sy = y0 + (i*11)%(fy(0)-y0); c.set(sx,sy,(i%3)?'·':'∙',15,0); } c.put(X(units-9), y0+1, '██', 15, 0); c.put(X(units-9), y0+2, '▀▀', 15, 0); }
+  if (!night && !rain) { const cx = X(Math.floor((t*0.3)%(units-12))); c.put(cx, y0+1, '░▒▒░', 15, skyBg); c.put(cx+1, y0+2, '░░', 15, skyBg); c.put(X((Math.floor(t*0.2)+40)%(units-8)), y0+4, '▒▒▒', 15, skyBg); if (!dusk) c.put(X(units-6), y0+1, '☼', 14, skyBg); }
+  if (rain) { for (let y=y0; y<fy(0); y++) for (let x=gutter; x<cols; x++) if (((x*7 + y*3 + t) % 11)===0) c.set(x,y,'/',9,8); }
+  // ground / dirt
+  for (let f=-1; f>=topFloor-nfloors+1; f--) for (let r=0;r<3;r++) for (let x=gutter;x<cols;x++) c.set(x, fy(f)+r, (x+r)%3===0?'░':' ', 6, 0);
+  for (let y=fy(topFloor-nfloors+1)+3; y<y0+vrows; y++) for (let x=gutter;x<cols;x++) c.set(x,y,(x+y)%3===0?'\u2591':' ',6,0);
+  // tower footprint: built floor spans
+  const spans = opts.spans;
+  for (const f in spans) { const [a,b] = spans[f]; if (fy(+f) < y0 || fy(+f)+2 >= y0+vrows) continue; for (let r=0;r<3;r++) for (let u=a;u<b;u++) c.set(X(u), fy(+f)+r, ' ', 7, 0); }
+  // grass at ground level outside the tower
+  const g0 = spans[0];
+  for (let u=0;u<units;u++) if (u<g0[0]||u>=g0[1]) c.set(X(u), fy(0)+2, '▓', 2, 0);
+  // gutter labels
+  for (let f=topFloor; f>topFloor-nfloors; f--) { const lbl = f>=0 ? String(f+1)+'F' : 'B'+(-f); c.put(0, fy(f)+1, lbl.padStart(3,' '), f===0?14:8, 0); }
+  // items
+  for (const it of opts.items) {
+    if (it.f > topFloor || it.f < topFloor-nfloors+1) continue;
+    let st = it.st;
+    if (typeof st === 'function') st = st(tod, t);
+    const T = TILES[it.kind]; const h = T.h || 3;
+    blit(c, X(it.x), fy(it.f + (h/3) - 1), it.kind, st, t + (it.x%3));
+  }
+  // lobby floor: amber band
+  const lob = opts.lobby;
+  for (const L of lob) {
+    const yy = fy(L.f);
+    for (let u=L.a; u<L.b; u++) for (let r=0;r<3;r++) c.set(X(u), yy+r, ' ', 0, 6);
+    for (let u=L.a; u<L.b; u+=16) { c.set(X(u), yy, '║', 15, 6); c.set(X(u), yy+1, '║', 15, 6); c.set(X(u), yy+2, '║', 15, 6); c.set(X(u+5), yy, '☼', 14, 6); c.set(X(u+12), yy, '☼', 14, 6); }
+    const mid = Math.floor((L.a+L.b)/2);
+    c.put(X(mid-1), yy+1, '▬▬▬', 0, 6); c.put(X(mid-1), yy+2, '▀▀▀', 0, 6); c.set(X(mid+4), yy+1, '♣', 2, 6); c.set(X(mid-5), yy+1, '♣', 2, 6);
+    // walkers
+    for (let i=0;i<L.people;i++) {
+      const dir = (i%2) ? 1 : -1; const span = L.b - L.a - 2;
+      let px = L.a + 1 + ((i*13 + dir*Math.floor(t*0.9)) % span + span) % span;
+      const stress = (i%7===3) ? 4 : (i%11===5 ? 13 : 0);
+      c.set(X(px), yy+1, '☺', stress, 6); c.set(X(px), yy+2, ((t+i)%2) ? '╨' : '∩', stress, 6);
+    }
+  }
+  // shafts
+  for (const s of opts.shafts) {
+    const w = s.express ? 6 : 4;
+    for (let f=s.top; f>=s.bottom; f--) {
+      if (f > topFloor || f < topFloor-nfloors+1) continue;
+      const yy = fy(f);
+      for (let r=0;r<3;r++) { c.set(X(s.x), yy+r, s.express?'║':'│', 8, 0); c.set(X(s.x+w-1), yy+r, s.express?'║':'│', 8, 0); for (let i=1;i<w-1;i++) c.set(X(s.x+i), yy+r, (r===1)?'·':' ', 8, 0); }
+    }
+    // car: position in thirds of a floor
+    const period = (s.top - s.bottom) * 3 * 2 + 12;
+    let ph = (Math.floor(t*0.8) + (s.phase||0)) % period;
+    let sub; if (ph < (s.top-s.bottom)*3) sub = ph; else if (ph < (s.top-s.bottom)*3 + 6) sub = (s.top-s.bottom)*3; else if (ph < (s.top-s.bottom)*6+6) sub = (s.top-s.bottom)*6+6-ph; else sub = 0;
+    const stopped = (ph >= (s.top-s.bottom)*3 && ph < (s.top-s.bottom)*3+6) || ph >= (s.top-s.bottom)*6+6;
+    const carTopRow = fy(s.bottom) + 2 - sub; // bottom row of floor s.bottom minus sub rows, minus 2 for 3-tall car
+    const cy = carTopRow - 2;
+    const kind = s.express ? 'elevatorExpress' : 'elevator';
+    if (cy >= y0 && cy+2 < y0+vrows) {
+      blit(c, X(s.x+1), cy, kind, stopped ? 'open' : 'moving', t);
+      if (!stopped) { const n = String(s.load||7); c.put(X(s.x+1), cy+1, n.padStart(w-2,' ').slice(0,w-2), 0, 7); }
+    }
+    // queues at floors
+    for (const q of (s.queues||[])) {
+      if (q.f > topFloor || q.f < topFloor-nfloors+1) continue;
+      const yy = fy(q.f);
+      for (let i=0;i<q.up;i++) { const col = i===0 && q.stressed ? 12 : (i===1 && q.stressed ? 13 : 15); c.set(X(s.x-1-i), yy+1, '☺', col, 0); c.set(X(s.x-1-i), yy+2, '╨', col, 0); }
+      for (let i=0;i<q.down;i++) { c.set(X(s.x+w+i), yy+1, '☺', 15, 0); c.set(X(s.x+w+i), yy+2, '╨', 15, 0); }
+    }
+  }
+  // status + footer
+  c.fill(0,0,cols,1,' ',15,1);
+  c.put(1,0,'$'+(opts.funds||'1,732,500'),15,1);
+  c.put(16,0,'Pop '+(opts.pop||'412'),15,1);
+  c.put(26,0,'★★',14,1);
+  const clock = night ? '11:20 PM' : (dusk ? '6:10 PM' : '10:42 AM');
+  c.put(32,0,'Y1 Q2 WD1 '+clock,15,1);
+  c.put(cols-19,0,'►►',14,1); c.put(cols-14,0,'[BUILD]',0,7); c.put(cols-6,0,'[MAP]',0,7);
+  c.fill(0,rows-2,cols,1,' ',7,0); c.put(1,rows-2,opts.msg||'Office workers demand Parking.   Fast food on 2F: Business is average.',14,0);
+  c.fill(0,rows-1,cols,1,' ',0,7); c.put(1,rows-1,'B)uild I)nspect V)eval M)ap F)inance Z)oom  Space pause  Arrows/Wheel scroll  Q)uit',0,7);
+  return c;
+}
+
+// the demo tower (units 0..127 available; 80-col view sees 0..75)
+const TOWER = {
+  spans: { 0:[0,128], 1:[0,128], 2:[0,128], 3:[0,128], 4:[0,96], 5:[0,96], 6:[0,96], 7:[0,80], 8:[0,80], 9:[0,80], 10:[0,64], 11:[0,64], '-1':[0,128], '-2':[0,128], '-3':[0,128] },
+  lobby: [ {f:0, a:0, b:128, people:14} ],
+  shafts: [ {x:24, bottom:-1, top:6, phase:0, load:9, queues:[{f:1, up:3, down:1, stressed:true},{f:3, up:1, down:2}]},
+            {x:76, bottom:-3, top:11, express:true, phase:9, load:31, queues:[{f:0, up:4, down:0}]},
+            {x:100, bottom:-1, top:11, phase:20, load:4, queues:[{f:5, up:2, down:0}]} ],
+  items: [
+    {kind:'office', x:0, f:1, st:(tod)=>tod==='night'?'night':'occupied'}, {kind:'office', x:9, f:1, st:'vacant'},
+    {kind:'fastFood', x:28, f:1, st:(tod,t)=>tod==='night'?'closed':(t%40<20?'rush':'open')}, {kind:'retail', x:44, f:1, st:(tod)=>tod==='night'?'closed':'open'},
+    {kind:'stairs', x:56, f:1, st:'used'}, {kind:'hotelSingle', x:64, f:1, st:'vacant'}, {kind:'hotelTwin', x:68, f:1, st:'dirty'},
+    {kind:'condo', x:0, f:2, st:(tod)=>tod==='night'?'night':'sold'}, {kind:'hotelSingle', x:16, f:2, st:'asleep'}, {kind:'hotelSingle', x:20, f:2, st:'occupied'},
+    {kind:'hotelSuite', x:28, f:2, st:'vip'}, {kind:'hotelTwin', x:38, f:2, st:'asleep'}, {kind:'housekeeping', x:44, f:2, st:'day'}, {kind:'security', x:59, f:2, st:'day'},
+    {kind:'office', x:0, f:3, st:(tod)=>tod==='night'?'night':'occupied'}, {kind:'office', x:9, f:3, st:'occupied'}, {kind:'restaurant', x:28, f:3, st:(tod)=>tod==='day'||tod==='rain'?'closed':'open'}, {kind:'office', x:52, f:3, st:'occupied'}, {kind:'office', x:61, f:3, st:'occupied'},
+    {kind:'condo', x:0, f:4, st:'forsale'}, {kind:'cinema', x:28, f:4, st:(tod,t)=>(t%60<40)?'showing':'idle'}, {kind:'escalator', x:60, f:4, st:'run'},
+    {kind:'condo', x:0, f:5, st:(tod)=>tod==='night'?'night':'sold'},
+    {kind:'parkingRamp', x:0, f:-1, st:'day'}, {kind:'parking', x:28, f:-1, st:'car'}, {kind:'parking', x:32, f:-1, st:'car'}, {kind:'parking', x:36, f:-1, st:'empty'}, {kind:'parking', x:40, f:-1, st:'car'}, {kind:'parking', x:44, f:-1, st:'car'}, {kind:'parking', x:48, f:-1, st:'empty'},
+    // wide-only content
+    {kind:'office', x:82, f:1, st:'occupied'}, {kind:'office', x:91, f:1, st:'occupied'}, {kind:'retail', x:104, f:1, st:'open'}, {kind:'retail', x:116, f:1, st:'open'},
+    {kind:'hotelSuite', x:82, f:2, st:'occupied'}, {kind:'hotelTwin', x:92, f:2, st:'vacant'}, {kind:'hotelSingle', x:104, f:2, st:'asleep'}, {kind:'hotelSingle', x:108, f:2, st:'vacant'}, {kind:'medical', x:102, f:3, st:'day'},
+    {kind:'office', x:82, f:3, st:'occupied'}, {kind:'partyHall', x:60, f:5, st:(tod,t)=>(t%50<30)?'party':'idle'}, {kind:'condo', x:0, f:6, st:'sold'}, {kind:'condo', x:0, f:7, st:'sold'}, {kind:'office', x:28, f:7, st:'occupied'}, {kind:'office', x:37, f:7, st:'occupied'}, {kind:'office', x:46, f:7, st:'vacant'},
+    {kind:'office', x:28, f:8, st:'occupied'}, {kind:'office', x:37, f:8, st:'occupied'}, {kind:'condo', x:0, f:8, st:'forsale'}, {kind:'stairs', x:60, f:7, st:'idle'},
+    {kind:'condo', x:0, f:9, st:'sold'}, {kind:'office', x:28, f:9, st:'occupied'}, {kind:'office', x:37, f:9, st:'occupied'}, {kind:'office', x:28, f:10, st:'occupied'}, {kind:'office', x:0, f:10, st:'occupied'}, {kind:'office', x:9, f:10, st:'occupied'},
+    {kind:'metro', x:28, f:-3, st:(tod,t)=>(t%30<16)?'train':'empty'}, {kind:'recycling', x:82, f:-2, st:'day'}, {kind:'parking', x:60, f:-1, st:'car'}, {kind:'parking', x:64, f:-1, st:'car'}, {kind:'parking', x:68, f:-1, st:'empty'},
+  ]
+};
+
+// ───────────────────────── popups ─────────────────────────
+function box(c, px, py, pw, ph, title, fg) {
+  c.fill(px,py,pw,ph,' ',7,0);
+  for (let x=px;x<px+pw;x++) { c.set(x,py,'═',fg,0); c.set(x,py+ph-1,'═',fg,0); }
+  for (let y=py;y<py+ph;y++) { c.set(px,y,'║',fg,0); c.set(px+pw-1,y,'║',fg,0); }
+  c.set(px,py,'╔',fg,0); c.set(px+pw-1,py,'╗',fg,0); c.set(px,py+ph-1,'╚',fg,0); c.set(px+pw-1,py+ph-1,'╝',fg,0);
+  c.put(px+2,py,' '+title+' ',0,7);
+}
+function buildMock(t) {
+  const c = scene(80, 24, t, 'day', TOWER);
+  const px=6, py=2, pw=68, ph=19;
+  box(c, px, py, pw, ph, 'BUILD', 15);
+  const rows = [
+    ['L','Lobby','$5,000/unit','  ','lobby'], ['O','Office','$40,000','  ','office'], ['C','Condo','$80,000','  ','condo'], ['F','Fast food','$100,000','  ','fastFood'],
+    ['E','Elevator','$200,000','  ','elevator'], ['A','Stairs','$5,000','  ','stairs'], ['H','Hotel single','$20,000','**','hotelSingle'], ['K','Housekeeping','$50,000','**','housekeeping'],
+    ['S','Security','$100,000','**','security'], ['T','Hotel twin','$50,000','***','hotelTwin'], ['U','Hotel suite','$100,000','***','hotelSuite'], ['R','Restaurant','$200,000','***','restaurant'],
+    ['P','Retail shop','$100,000','***','retail'], ['N','Cinema','$500,000','***','cinema'], ['Y','Party hall','$100,000','***','partyHall'], ['X','Express elev','$400,000','***','elevatorExpress'],
+  ];
+  const locked = new Set(['T','U','R','P','N','Y','X']);
+  rows.forEach((r,i) => {
+    const col = i<8 ? 0 : 1; const y = py+2+(i%8)*2; const x = px+2+col*33;
+    const lk = locked.has(r[0]);
+    c.put(x, y, r[0], lk?8:14, 0); c.put(x+2, y, r[1].padEnd(13,' '), lk?8:7, 0); c.put(x+15, y, r[2].padStart(12,' '), lk?8:7, 0); c.put(x+28, y, r[3], lk?8:14, 0);
+    // mini preview (middle row of the tile)
+    const d = TILES[r[4]].draw(TILES[r[4]].states[0], t); const mid = (d.rows[1]||'').slice(0,20), pm = (d.paint[1]||'').slice(0,20);
+    for (let k=0;k<mid.length;k++) { if (mid[k]===' ') continue; const colr = C[pm[k]]||[7,0]; c.set(x+2+k, y+1, mid[k], lk?8:colr[0], lk?0:colr[1]); }
+  });
+  for (let x=px+1;x<px+pw-1;x++) { const cell=c.get(x,py+2); cell.bg=1; if (cell.fg===7||cell.fg===14) cell.fg=15; }
+  c.put(px+2, py+ph-1, ' Office  $40,000  9x1  Workers need a lobby route. Click to place, right-click/Esc cancel ', 0, 7);
+  return c;
+}
+function elevMock(t) {
+  const c = scene(80, 24, t, 'day', TOWER);
+  const px=4, py=2, pw=72, ph=19;
+  box(c, px, py, pw, ph, 'STANDARD ELEVATOR #1   B1 - 6F   2 cars   capacity 21', 15);
+  const floors = [6,5,4,3,2,1,0,-1];
+  c.put(px+2, py+1, 'Floor  Serve  Home', 11, 0);
+  const periods = ['7-12','12-1230','1230-1','1-5','5-9','9-1','1-7'];
+  periods.forEach((p,j) => c.put(px+24+j*7, py+1, p.padEnd(6,' '), 11, 0));
+  c.put(px+22, py+1, 'WD', 15, 1); c.put(px+22, py+2, 'WE', 7, 0);
+  floors.forEach((f,i) => {
+    const y = py+3+i; const lbl = f>=0 ? String(f+1)+'F' : 'B'+(-f);
+    c.put(px+2, y, lbl.padStart(3,' '), f===0?14:7, 0);
+    const serve = f!==5; c.put(px+9, y, serve ? 'yes' : ' x ', serve?10:12, 0);
+    if (f===0) c.put(px+16, y, 'c1', 14, 0); if (f===3) c.put(px+16, y, 'c2', 14, 0);
+    periods.forEach((p,j) => { const x = px+24+j*7; const mode = (j===0 && f>0) ? 'EXP↑' : ((j===4) ? 'EXP↓' : 'local'); c.put(x, y, mode.padEnd(6,' '), mode==='local'?7:14, 0); });
+  });
+  c.put(px+2, py+12, 'Waiting Car Response  [ 5 ] floors      Standard Floor Departure  [ 0 ] s', 7, 0);
+  c.put(px+2, py+13, 'Period mode: Local / Express to Top / Express to Bottom  (Space or click toggles)', 8, 0);
+  // shaft preview
+  const sx = px+pw-10;
+  c.put(sx, py+2, 'shaft', 8, 0);
+  for (let i=0;i<8;i++) { const y=py+3+i; c.set(sx, y, '│', 8, 0); c.set(sx+3, y, '│', 8, 0); c.put(sx+1, y, '··', 8, 0); }
+  c.put(sx+1, py+3+2, '▐▌', 15, 0); c.put(sx+1, py+3+6, '☺☺', 15, 0);
+  c.put(px+2, py+ph-2, '[ADD CAR $80,000]  [REMOVE CAR]  [SET HOME c2 = 4F]  [SIMULATE]  [CLOSE]', 0, 7);
+  const cy = py+3+2, cx = px+24+3*7; for (let k=0;k<6;k++) { const cell=c.get(cx+k,cy); cell.bg=1; cell.fg=15; }
+  return c;
+}
+
+// ───────────────────────── tile sheet ─────────────────────────
+function buildSheet(t) {
+  const host = document.getElementById('sheet');
+  if (!host.dataset.built) {
+    host.dataset.built = '1';
+    for (const k in TILES) {
+      const T = TILES[k];
+      const div = document.createElement('div'); div.className='tile';
+      const h4 = document.createElement('h4'); h4.textContent = T.name + '  ' + T.w + ' x ' + ((T.h||3)/3);
+      const term = document.createElement('div'); term.className='term';
+      const cv = document.createElement('canvas'); cv.dataset.kind = k; term.appendChild(cv);
+      const st = document.createElement('div'); st.className='st'; st.textContent = 'States: ' + T.states.join(', ');
+      div.append(h4, term, st); host.appendChild(div);
+    }
+  }
+  for (const cv of host.querySelectorAll('canvas')) {
+    const k = cv.dataset.kind, T = TILES[k]; const h = T.h || 3;
+    const n = T.states.length; const w = T.w + 1;
+    const cells = grid(w*n + (n-1), h);
+    for (let i=0;i<cells.length;i++) cells[i].bg = 0;
+    T.states.forEach((st,i) => { if (T.shaft) { for (let r=0;r<h;r++) { cells.set(i*(w+1), r, '│', 8, 0); cells.set(i*(w+1)+T.w-1, r, '│', 8, 0); } blit(cells, i*(w+1)+1, 0, k, st, t); } else blit(cells, i*(w+1), 0, k, st, t); });
+    paintTerm(cv, cells, cells.cols, cells.rows, 9, 18);
+  }
+}
+
+// ───────────────────────── run ─────────────────────────
+let tod = 'day', t = 0, playing = true;
+const CW = 9, CH = 18;
+function frame() {
+  paintTerm(document.getElementById('main'), scene(80,24,t,tod,TOWER), 80, 24, CW, CH);
+  const wide = scene(132,50,t,tod,Object.assign({}, TOWER, {topFloor: 11, msg:'Sims on 7F need a path to 1F.   Hotel guest checked in at 2F suite (VIP).'}));
+  paintTerm(document.getElementById('wide'), wide, 132, 50, 8, 16);
+  paintTerm(document.getElementById('build'), buildMock(t), 80, 24, CW, CH);
+  paintTerm(document.getElementById('elev'), elevMock(t), 80, 24, CW, CH);
+  buildSheet(t);
+}
+function tick() { if (playing) { t++; frame(); } }
+document.querySelectorAll('[data-tod]').forEach(b => b.addEventListener('click', () => { tod = b.dataset.tod; document.querySelectorAll('[data-tod]').forEach(x => x.setAttribute('aria-pressed', x===b ? 'true':'false')); frame(); }));
+document.getElementById('playpause').addEventListener('click', (e) => { playing = !playing; e.currentTarget.setAttribute('aria-pressed', playing?'true':'false'); e.currentTarget.textContent = playing ? 'Animating' : 'Paused'; });
+const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (reduce) { playing = false; const b = document.getElementById('playpause'); b.setAttribute('aria-pressed','false'); b.textContent='Paused'; }
+frame();
+setInterval(tick, 250);
+if (document.fonts && document.fonts.load) document.fonts.load('600 16px "IBM Plex Mono"').then(frame, frame);
+</script>

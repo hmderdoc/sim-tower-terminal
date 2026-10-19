@@ -1,0 +1,22 @@
+2026/10/19 09:04:08 start user="test" size=80x24 door=false version=dev
+2026/10/19 09:04:08 exit user="test"
+2026/10/19 09:08:20 door socket fd=127
+2026/10/19 09:08:20 start user="Hm Derdoc" size=147x51 door=true version=dev
+2026/10/19 09:08:24 exit user="Hm Derdoc"
+2026/10/19 09:20:14 start user="smoke" size=80x24 door=false version=dev
+2026/10/19 09:20:14 exit user="smoke"
+2026/10/19 09:20:49 door socket fd=127
+2026/10/19 09:20:49 start user="Hm Derdoc" size=147x51 door=true version=dev
+2026/10/19 09:20:49 sim adapter not wired yet: running the demo tower
+2026/10/19 09:26:51 exit user="Hm Derdoc"
+2026/10/19 09:26:59 door socket fd=127
+2026/10/19 09:26:59 start user="Hm Derdoc" size=113x51 door=true version=dev
+2026/10/19 09:26:59 sim adapter not wired yet: running the demo tower
+2026/10/19 09:36:44 exit user="Hm Derdoc"
+2026/10/19 09:36:49 door socket fd=127
+2026/10/19 09:36:49 start user="Hm Derdoc" size=113x51 door=true version=dev
+2026/10/19 09:36:49 sim adapter not wired yet: running the demo tower
+2026/10/19 09:38:27 exit user="Hm Derdoc"
+2026/10/19 09:38:31 door socket fd=127
+2026/10/19 09:38:31 start user="Hm Derdoc" size=113x51 door=true version=dev
+2026/10/19 09:38:31 sim adapter not wired yet: running the demo tower

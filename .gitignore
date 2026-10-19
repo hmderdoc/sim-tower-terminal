@@ -1,0 +1,7 @@
+# built binary
+/simtower
+/door
+# per-user saves
+/data/*.json
+# vendored upstream reference (tower-together sim source + 288MB of trace fixtures); see reference/README.md
+/reference/tower-together/
