@@ -35,7 +35,7 @@ Download a release for your platform from the Releases page, or build from
 source (Go 1.25 or newer):
 
 ```
-git clone <this repo> simtower && cd simtower
+git clone https://github.com/hmderdoc/sim-tower-terminal.git && cd sim-tower-terminal
 make build          # -> ./simtower
 ```
 
