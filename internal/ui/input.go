@@ -439,6 +439,21 @@ func (a *App) leftRelease() {
 		a.ghost.valid = false
 		return
 	}
+	if a.tool.IsShaft() {
+		// The elevator tool on an existing shaft adds a car at the clicked
+		// floor, which becomes that car's home floor (as in the original).
+		if s, ok := a.shaftAt(a.dx0, a.df0); ok {
+			if s.Kind != a.tool {
+				a.say("That is a "+kindName(s.Kind)+" shaft.", true)
+			} else if res := a.m.AddCar(s.ID, a.df0); !res.OK {
+				a.say(res.Reason, true)
+			} else {
+				a.say("Car added: "+money(res.Cost), false)
+			}
+			a.ghost.valid = false
+			return
+		}
+	}
 	res := a.m.Place(a.tool, x, f, w, h)
 	if !res.OK {
 		a.say(res.Reason, true)
@@ -446,6 +461,16 @@ func (a *App) leftRelease() {
 		a.say(a.toolDef.Name+" built: "+money(res.Cost), false)
 	}
 	a.ghost.valid = false
+}
+
+// shaftAt returns the shaft covering unit u on floor f.
+func (a *App) shaftAt(u, f int) (Shaft, bool) {
+	for _, s := range a.m.Shafts() {
+		if u >= s.X && u < s.X+s.Kind.ShaftWidth() && f >= s.Bottom && f <= s.Top {
+			return s, true
+		}
+	}
+	return Shaft{}, false
 }
 
 func (a *App) rightClick() {

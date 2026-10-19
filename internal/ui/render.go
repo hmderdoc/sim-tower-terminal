@@ -417,10 +417,27 @@ func (a *App) updateGhost() {
 	if g.valid && g.k == a.tool && g.x == x && g.f == f && g.w == w && g.h == h {
 		return
 	}
-	g.k, g.x, g.f, g.w, g.h, g.valid = a.tool, x, f, w, h, true
+	g.k, g.x, g.f, g.w, g.h, g.valid, g.car = a.tool, x, f, w, h, true, 0
 	if a.tool == KindBulldozer {
 		g.res = Result{OK: true}
 		return
+	}
+	if a.tool.IsShaft() {
+		if s, ok := a.shaftAt(a.dx1, a.df1); ok {
+			// hovering an existing shaft: the click adds a car here
+			g.car, g.x, g.f, g.w, g.h = s.ID, s.X, a.df1, s.Kind.ShaftWidth(), 1
+			if s.Kind != a.tool {
+				g.res = Result{Reason: "That is a " + kindName(s.Kind) + " shaft."}
+			} else {
+				g.res = Result{OK: true, Cost: a.m.Schedule(s.ID).CarCost}
+			}
+			if !g.res.OK {
+				a.say(g.res.Reason, true)
+			} else {
+				a.say("Add a car here: "+money(g.res.Cost), false)
+			}
+			return
+		}
 	}
 	g.res = a.m.CanPlace(a.tool, x, f, w, h)
 	if !g.res.OK && g.res.Reason != "" {
@@ -444,6 +461,11 @@ func (a *App) drawGhost() {
 		fg = 14
 	}
 	top := a.fy(g.f + g.h - 1)
+	if g.car > 0 {
+		// car ghost: a car-sized block inside the shaft walls at this floor
+		a.fill(a.sx(g.x+1), top, g.w-2, 3, gLight, fg, 0)
+		return
+	}
 	if tw, _ := TileSize(g.k); tw > 0 && !g.k.IsShaft() && g.k != KindLobby {
 		a.fill(a.sx(g.x), top, g.w, g.h*3, gLight, fg, 0)
 		Blit(ghostCanvas{a, fg}, a.sx(g.x), top, g.k, tiles[g.k].states[0], a.tframe)

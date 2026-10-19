@@ -350,3 +350,40 @@ func BenchmarkRender132x50(b *testing.B) {
 		a.scr.Flush(&buf)
 	}
 }
+
+// TestElevatorToolAddsCar: the elevator tool clicked on an existing shaft adds
+// a car at that floor instead of trying to place a new shaft (original
+// behaviour), and the ghost says so.
+func TestElevatorToolAddsCar(t *testing.T) {
+	a, d := newTestApp(80, 24)
+	a.render()
+	keyCh(a, 'b')
+	keyCh(a, 'e')
+	if a.tool != KindElevator {
+		t.Fatalf("E did not arm the elevator tool: %v", a.tool)
+	}
+	var sh Shaft
+	for _, s := range a.m.Shafts() {
+		if s.Kind == KindElevator {
+			sh = s
+			break
+		}
+	}
+	if sh.ID == 0 {
+		t.Fatal("demo has no standard shaft")
+	}
+	cars := len(sh.Cars)
+	a.topFloor = sh.Bottom + 6
+	a.render()
+	f := sh.Bottom + 1
+	click(a, a.sx(sh.X+1), a.fy(f)+1, 0)
+	for _, s := range a.m.Shafts() {
+		if s.ID == sh.ID && len(s.Cars) != cars+1 {
+			t.Fatalf("cars %d -> %d (alert %q)", cars, len(s.Cars), a.alert)
+		}
+	}
+	if a.tool != KindElevator {
+		t.Fatal("tool should stay armed")
+	}
+	_ = d
+}

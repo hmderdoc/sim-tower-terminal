@@ -141,6 +141,7 @@ type App struct {
 	ghost    struct {
 		k          Kind
 		x, f, w, h int
+		car        int // >0: the elevator tool is over shaft ID `car`; click adds a car at f
 		res        Result
 		valid      bool
 	}
