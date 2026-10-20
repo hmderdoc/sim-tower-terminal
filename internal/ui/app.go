@@ -21,6 +21,7 @@ type Config struct {
 	Player   string
 	SavePath string
 	Logger   *log.Logger
+	Trace    bool // log every input event (Logger must be set)
 	Version  string
 	Model    Model // nil -> DemoModel
 	// Launcher, when set, opens the start menu over the splash first; the
@@ -437,6 +438,13 @@ func (a *App) Run() {
 		}
 	}
 	a.saveQuiet()
+}
+
+// logf writes to the door log when one is configured.
+func (a *App) logf(format string, args ...any) {
+	if a.cfg.Logger != nil {
+		a.cfg.Logger.Printf(format, args...)
+	}
 }
 
 func (a *App) saveQuiet() {

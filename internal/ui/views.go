@@ -199,7 +199,10 @@ func upper(c byte) byte {
 
 // ================= facility window =================
 
-type facilityView struct{ id int }
+type facilityView struct {
+	id   int
+	note string // last refusal, shown in the window
+}
 
 func (v *facilityView) draw(a *App) {
 	info := a.m.Inspect(v.id)
@@ -315,7 +318,10 @@ func (v *facilityView) draw(a *App) {
 		y += snap
 	}
 	y++
-	if info.Message != "" {
+	switch {
+	case v.note != "":
+		a.put(x, minInt(y, py+ph-3), clip(v.note, pw-4), 12, 0)
+	case info.Message != "":
 		a.put(x, minInt(y, py+ph-3), clip(info.Message, pw-4), 14, 0)
 	}
 	a.button(px+pw-10, py+ph-2, "CLOSE", actClose, 0)
@@ -324,7 +330,12 @@ func (v *facilityView) draw(a *App) {
 func (v *facilityView) act(a *App, h *hotspot) bool {
 	switch h.act {
 	case actRent:
-		a.m.SetRent(v.id, h.arg)
+		r := a.m.SetRent(v.id, h.arg)
+		v.note = r.Reason
+		a.logf("set rent item=%d tier=%d -> %+v, now %d", v.id, h.arg, r, a.m.Inspect(v.id).Rent)
+		if !r.OK {
+			a.say(r.Reason, true)
+		}
 		return true
 	case actMovie:
 		if r := a.m.ChangeMovie(v.id, h.arg == 1); !r.OK {

@@ -290,16 +290,22 @@ func (m *SimModel) itemByID(id int) (*Item, itemRef, bool) {
 	return nil, itemRef{}, false
 }
 
-func (m *SimModel) SetRent(id, tier int) {
+func (m *SimModel) SetRent(id, tier int) Result {
 	_, ref, ok := m.itemByID(id)
 	if !ok || ref.key == "" {
-		return
+		return Result{Reason: "That facility is gone."}
 	}
 	r := m.ts.SubmitCommand(sim.SimCommand{Type: sim.CmdSetRentLevel, X: ref.x, Y: ref.y, RentLevel: clampInt(tier, 0, 3)})
-	if !r.Accepted && r.Reason != "" {
-		m.msg(r.Reason, true)
-	}
 	m.touch()
+	if !r.Accepted {
+		reason := r.Reason
+		if reason == "" {
+			reason = "The price cannot be changed."
+		}
+		m.msg(reason, true)
+		return Result{Reason: reason}
+	}
+	return Result{OK: true}
 }
 
 func (m *SimModel) ChangeMovie(id int, classic bool) Result {

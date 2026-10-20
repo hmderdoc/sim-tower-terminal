@@ -6,6 +6,9 @@ import (
 
 // handle routes one input event.
 func (a *App) handle(ev term.Event) {
+	if a.cfg.Trace {
+		a.logf("ev %+v views=%d tool=%v", ev, len(a.views), a.tool)
+	}
 	switch {
 	case ev.Resize:
 		if ev.Cols < 10 || ev.Rows < 5 {
@@ -469,6 +472,7 @@ func (a *App) leftRelease() {
 		}
 	}
 	res := a.m.Place(a.tool, x, f, w, h)
+	a.logf("place %s x=%d f=%d w=%d h=%d -> %+v", a.toolDef.Name, x, f, w, h, res)
 	if !res.OK {
 		a.say(res.Reason, true)
 	} else {

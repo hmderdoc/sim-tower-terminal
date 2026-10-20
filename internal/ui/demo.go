@@ -884,11 +884,13 @@ func (d *DemoModel) SetDeparture(id, n int) {
 	}
 }
 
-func (d *DemoModel) SetRent(id, tier int) {
+func (d *DemoModel) SetRent(id, tier int) Result {
 	if it := d.find(id); it != nil && it.Rent >= 0 {
 		it.Rent = clampInt(tier, 0, 3)
 		d.refresh()
+		return Result{OK: true}
 	}
+	return Result{Reason: "No price to set."}
 }
 
 func (d *DemoModel) ChangeMovie(id int, classic bool) Result {

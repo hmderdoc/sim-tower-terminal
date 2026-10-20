@@ -31,6 +31,7 @@ func main() {
 	logPath := flag.String("log", "", "debug log file (default: <binary dir>/simtower.log)")
 	showVersion := flag.Bool("version", false, "print version and exit")
 	demo := flag.Bool("demo", false, "run the UI on the scripted demo tower (no sim)")
+	trace := flag.Bool("trace", os.Getenv("SIMTOWER_TRACE") != "", "log every input event (also SIMTOWER_TRACE=1, or a file named trace in the data dir)")
 	flag.Parse()
 	if *showVersion {
 		fmt.Println("simtower", version)
@@ -151,6 +152,7 @@ func main() {
 		SavePath:   savePath,
 		Launcher:   launcher,
 		Logger:     logger,
+		Trace:      *trace || fileExists(filepath.Join(*dataDir, "trace")),
 		Version:    version,
 	})
 	app.Run()
@@ -166,4 +168,9 @@ func saveName(alias string) string {
 		s = "player"
 	}
 	return strings.ToLower(s)
+}
+
+func fileExists(p string) bool {
+	_, err := os.Stat(p)
+	return err == nil
 }

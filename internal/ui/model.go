@@ -43,7 +43,7 @@ type Model interface {
 	SetPeriodMode(shaftID int, weekend bool, period int, mode PeriodMode)
 	SetResponse(shaftID, floors int)
 	SetDeparture(shaftID, seconds int)
-	SetRent(itemID, tier int)
+	SetRent(itemID, tier int) Result
 	ChangeMovie(itemID int, classic bool) Result
 	RenameTenant(personID int, name string) Result
 	Respond(choice int) // answer the active Event's prompt (index into Choices)

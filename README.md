@@ -65,6 +65,7 @@ Flags:
 | `-log FILE` | debug log (default `<binary dir>/simtower.log`) |
 | `-dropfile PATH` | DOOR32.SYS path for door mode (see below) |
 | `-version` | print the version |
+| `-trace` | log every input event to the log file (also a file named `trace` in the data dir) |
 
 Terminal requirements: ANSI with CP437 glyphs and 16 colors. SyncTERM,
 NetRunner, fTelnet, Qodem, and most xterm-style terminals with a CP437 font

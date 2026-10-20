@@ -10,3 +10,4 @@
 /data/*.ui.json
 /simtower.exe
 /dist/
+/data/trace
