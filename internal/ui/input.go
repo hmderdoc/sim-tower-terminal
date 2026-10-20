@@ -503,7 +503,10 @@ func (a *App) disarm() {
 	a.dragging = false
 	a.ghost.valid = false
 	if a.anyMotion && a.cfg.Term != nil {
-		a.cfg.Term.Write([]byte("\x1b[?1003l"))
+		// SyncTERM keeps one tracking mode: resetting 1003 turns the mouse
+		// off entirely, so re-select click tracking rather than just dropping
+		// any-motion.
+		a.cfg.Term.Write([]byte("\x1b[?1003l" + term.MouseOn))
 		a.anyMotion = false
 	}
 	a.alertUntil = 0

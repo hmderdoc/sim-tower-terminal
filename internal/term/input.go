@@ -83,6 +83,7 @@ const escTimeout = 60 * time.Millisecond
 // It must be the only reader of t once started.
 func ReadLoop(t Term, ch chan<- Event) {
 	buf := make([]byte, 256)
+	lastCR := false
 	for {
 		n, err := t.Read(buf)
 		if err != nil {
@@ -92,9 +93,19 @@ func ReadLoop(t Term, ch chan<- Event) {
 		for i := 0; i < n; i++ {
 			c := buf[i]
 			if c != 27 {
+				// telnet NVT sends Enter as CR LF or CR NUL: one Enter, not two
+				if lastCR && (c == '\n' || c == 0) {
+					lastCR = false
+					continue
+				}
+				lastCR = c == '\r'
+				if c == 0 {
+					continue
+				}
 				ch <- plainKey(c)
 				continue
 			}
+			lastCR = false
 			nb, ok := escNext(t, buf, n, &i)
 			if !ok {
 				ch <- Event{Kind: KeyEsc}

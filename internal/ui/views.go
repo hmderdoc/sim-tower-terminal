@@ -276,6 +276,8 @@ func (v *facilityView) draw(a *App) {
 	label("Rent")
 	if info.Rent < 0 || len(info.Tiers) == 0 {
 		a.put(x+10, y, "n/a", 8, 0)
+	} else if info.RentFixed != "" {
+		a.put(x+10, y, clip(info.Tiers[info.Rent].Label+" ("+info.RentFixed+")", pw-14), 7, 0)
 	} else {
 		bx := x + 10
 		for i, t := range info.Tiers {

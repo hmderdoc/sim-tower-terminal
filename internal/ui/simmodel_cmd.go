@@ -404,6 +404,9 @@ func (m *SimModel) Inspect(id int) InspectInfo {
 			in.Tiers = append(in.Tiers, RentTier{Label: money(n), Amount: n})
 		}
 		in.Income = rentLabels[it.Kind] + " " + money(in.Tiers[it.Rent].Amount)
+		if it.Kind == KindCondo && rec != nil && rec.UnitStatus < 0x18 {
+			in.RentFixed = "sold at this price"
+		}
 	} else {
 		in.Rent = -1
 	}

@@ -298,6 +298,7 @@ type InspectInfo struct {
 	Length    string // "2 days"
 	Rent      int    // selected tier, -1 if not rentable
 	Tiers     []RentTier
+	RentFixed string // non-empty: the price can no longer be changed (why)
 	Income    string // "Daily sales $4,000"
 	Message   string // "Stairs/Elevators are too far away"
 	Movie     string // cinema only: current movie, "" otherwise
