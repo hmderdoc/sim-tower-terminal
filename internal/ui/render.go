@@ -127,6 +127,10 @@ func (a *App) drawScene() {
 			fr = it.X / 4 // per-space car color, not animated
 		}
 		Blit(a, a.sx(it.X), a.fy(it.Floor+it.H-1), it.Kind, tileStateFor(it), fr)
+		if it.Kind == KindCondo && it.State == StateForSale && it.Rent >= 0 && it.Rent < 4 {
+			// the tile art carries a sample price; paint the asking price
+			a.put(a.sx(it.X)+1, a.fy(it.Floor)+1, padRight("FOR SALE $"+itoa(int(tierTables[KindCondo][it.Rent]/1000))+"K", 14), 14, 0)
+		}
 	}
 	if a.evalMode != 0 {
 		a.drawEvalOverlay(items)

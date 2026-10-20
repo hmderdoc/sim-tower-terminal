@@ -1,6 +1,9 @@
 package ui
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestClickInspectsAndSetsRent(t *testing.T) {
 	m := buildTestTower(t)
@@ -57,5 +60,36 @@ func TestClickInspectsAndSetsRent(t *testing.T) {
 	}
 	if in := m.Inspect(office.ID); in.Rent != 2 {
 		t.Fatalf("rent reverted to %d after stepping", in.Rent)
+	}
+}
+
+// The for-sale condo tile shows the asking price, not the art's sample.
+func TestCondoTileShowsAskingPrice(t *testing.T) {
+	m := buildTestTower(t)
+	a := New(Config{Cols: 80, Rows: 24, Model: m})
+	var condo Item
+	for _, it := range m.Items() {
+		if it.Kind == KindCondo {
+			condo = it
+		}
+	}
+	a.centerOn(condo.X, condo.Floor)
+	row := func() string {
+		a.render()
+		y := a.fy(condo.Floor) + 1
+		var b []byte
+		for x := a.sx(condo.X); x < a.sx(condo.X)+condo.W; x++ {
+			b = append(b, a.scr.Get(x, y).Ch)
+		}
+		return string(b)
+	}
+	if r := row(); !strings.Contains(r, "FOR SALE $150K") {
+		t.Fatalf("default tile row %q", r)
+	}
+	if r := m.SetRent(condo.ID, 3); !r.OK {
+		t.Fatal(r.Reason)
+	}
+	if r := row(); !strings.Contains(r, "FOR SALE $40K") {
+		t.Fatalf("after repricing: %q", r)
 	}
 }
