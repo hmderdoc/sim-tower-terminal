@@ -82,7 +82,7 @@ button in a window. The keyboard path is complete too.
 | Key | Action |
 |---|---|
 | `B` | build palette (each item has its own letter; the tool stays armed after placing) |
-| `I` / click | inspect a room, shaft or person |
+| `I` / click | inspect a room, shaft or person (a left press that moves pans instead) |
 | `V` | evaluation overlay: eval, pricing, hotel, off |
 | `M` | overview map (click to jump) |
 | `F` | finance report |
@@ -91,7 +91,7 @@ button in a window. The keyboard path is complete too.
 | `Space` | pause / resume |
 | `1` `2` | normal / fast |
 | Arrows, PgUp/PgDn, Home | scroll (Home returns to the lobby) |
-| Wheel / Shift+wheel / right-drag | scroll floors / scroll units / pan |
+| Wheel / Shift+wheel / drag | scroll floors / scroll units / pan (left-drag with no tool armed, or right-drag any time) |
 | `Enter` | left click at the keyboard cursor; `Shift`+arrows drag |
 | `Esc` / right click | drop the tool or close the window |
 | `Q` | save and quit |

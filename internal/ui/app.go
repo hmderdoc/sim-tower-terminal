@@ -147,10 +147,13 @@ type App struct {
 	}
 	anyMotion bool // 1003 mode on (hover ghost)
 
-	// right-drag pan
+	// drag pan: right button anywhere, or left button with no tool armed
+	// (a left press that never moves inspects on release)
 	panning     bool
+	panBtn      int
 	panMoved    bool
 	panX, panY  int
+	panU, panF  int // cell under the left press, inspected if it stays a click
 	evalMode    int // 0 off, 1 eval, 2 pricing, 3 hotel
 	zoom        bool
 	alert       string

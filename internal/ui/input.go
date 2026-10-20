@@ -301,11 +301,11 @@ func (a *App) mouse(ev term.Event) {
 		case 0:
 			a.leftClickAt(x, y)
 		case 2:
-			a.panning, a.panMoved, a.panX, a.panY = true, false, x, y
+			a.beginPan(2, x, y)
 		}
 	case term.MouseMotion:
 		switch {
-		case ev.Button == 2 && a.panning:
+		case a.panning && ev.Button == a.panBtn:
 			dx, dy := x-a.panX, y-a.panY
 			if dx != 0 || dy/3 != 0 {
 				a.panMoved = true
@@ -325,10 +325,14 @@ func (a *App) mouse(ev term.Event) {
 			a.mouseHover(x, y)
 		}
 	case term.MouseRelease:
-		if a.panning && (ev.Button == 2 || ev.Button == 3) {
+		if a.panning && (ev.Button == a.panBtn || ev.Button == 3) {
 			a.panning = false
 			if !a.panMoved {
-				a.rightClick()
+				if a.panBtn == 2 {
+					a.rightClick()
+				} else {
+					a.inspectAt(a.panU, a.panF)
+				}
 			}
 			return
 		}
@@ -393,8 +397,18 @@ func (a *App) leftClickAt(x, y int) {
 	if u, f, ok := a.cellAt(x, y); ok {
 		a.focus = zoneView
 		a.curX, a.curF = u, f
+		if a.tool == KindNone {
+			// left drag pans; a press released in place inspects
+			a.beginPan(0, x, y)
+			a.panU, a.panF = u, f
+			return
+		}
 		a.leftPress(u, f)
 	}
+}
+
+func (a *App) beginPan(btn, x, y int) {
+	a.panning, a.panBtn, a.panMoved, a.panX, a.panY = true, btn, false, x, y
 }
 
 // leftPress = left click on the tower at (u, f): place with a tool armed,
@@ -601,7 +615,7 @@ func (a *App) do(h *hotspot, x, y int, click bool) {
 		a.closeAll()
 		a.zoom = !a.zoom
 	case actScrollHelp:
-		a.say("Arrows move the cursor, PgUp/PgDn 10 floors, Home = lobby. Wheel scrolls floors, Shift+wheel units, right-drag pans.", false)
+		a.say("Arrows move the cursor, PgUp/PgDn 10 floors, Home = lobby. Wheel scrolls floors, Shift+wheel units, drag with the mouse to pan.", false)
 	case actQuit:
 		a.quit = true
 	case actMsgLog:

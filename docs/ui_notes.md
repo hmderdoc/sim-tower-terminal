@@ -132,7 +132,7 @@ every view at four sizes and 30 frames.
 
 - Mouse: SGR 1006 click/drag (1000/1002) always on; 1003 (any motion) only
   while a build tool is armed, for the hover ghost. Wheel scrolls floors,
-  Shift+wheel units, right-drag pans, right click (no drag) disarms the tool
+  Shift+wheel units, left-drag (no tool armed) or right-drag pans, right click (no drag) disarms the tool
   or closes the top popup.
 - Every click target is a `hotspot` registered while drawing (status row
   elements, hotkey-bar entries, message line, popup buttons, grid cells).

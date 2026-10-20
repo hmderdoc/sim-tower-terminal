@@ -66,7 +66,7 @@ The whole game must be playable with only the mouse and with only the
 keyboard.
 
 Mouse (SGR 1006, press/release/drag, wheel):
-- Wheel scrolls floors; Shift+wheel scrolls units; right-drag pans.
+- Wheel scrolls floors; Shift+wheel scrolls units; left-drag (no tool) or right-drag pans.
 - Left click on the tower with no tool: inspect (facility / shaft / tenant
   window). With a build tool armed: place; the tool stays armed; right click
   or Esc disarms. Drag with the elevator tool sets shaft height; drag with
